@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="include/brower/browerHeader::html('区块链浏览器')"></head>
+<body>
+<div th:replace="include/brower/browerNavigator::html"></div>
+<script>
+    $(function () {
+        var data4Vue = {
+            uri: 'blocks',
+            beans: []
+        };
+
+        //ViewModel
+        var vue = new Vue({
+            el: '#workingArea',
+            data: data4Vue,
+            mounted: function () { //mounted　表示这个 Vue 对象加载成功了
+                this.list();
+            },
+            methods: {
+                list: function () {
+                    var url = this.uri;
+                    axios.get(url).then(function (response) {
+                        vue.beans = response.data;
+                    });
+                }
+            }
+        });
+    });
+
+</script>
+<div id="workingArea">
+    <div class="container">
+        <div th:replace="include/brower/browerSearch::html"></div>
+        <div class="row">
+            <div class="panel">
+                <div class="panel-heading blockAbstract-outer">
+                    <div class="panel-heading-title">最近出块</div>
+                </div>
+                <div class="panel-body text-center">
+                    <div class="blockAbstract-inner">
+                        <table class="table table-hover text-center" style="text-align: center">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">高度</th>
+                                <th style="text-align: center">播报方</th>
+                                <th style="text-align: center">大小(B)</th>
+                                <th style="text-align: center">块收益</th>
+                                <th style="text-align: center">时间</th>
+                                <th style="text-align: center">块哈希</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="bean in beans ">
+                                <td><a :href="'block?height=' + bean.height ">{{bean.height}}</a></td>
+                                <td><a :href="'address?address=' + bean.replayed">{{bean.replayed}}</a></td>
+                                <td>{{bean.size}}</td>
+                                <td>{{bean.bits}}</td>
+                                <td>{{bean._time}}</td>
+                                <td><a :href="'block?height=' + bean.height ">{{bean.blockhash}}</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="include/brower/browerFooter::html"></div>
+</body>
+</html>

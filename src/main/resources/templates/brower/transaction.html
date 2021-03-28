@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="include/brower/browerHeader::html('交易')"></head>
+<body>
+<div th:replace="include/brower/browerNavigator::html"></div>
+<script>
+    $(function () {
+        var data4Vue = {
+            uri_transactions: 'txbyid/',
+            transaction: [],
+        };
+
+        //ViewModel
+        var vue = new Vue({
+            el: '#workingArea',
+            data: data4Vue,
+            mounted: function () { //mounted　表示这个 Vue 对象加载成功了
+                this.list_transaction();
+            },
+            methods: {
+                list_transaction: function () {
+                    var id = getUrlParms("id");
+                    var url = this.uri_transactions + id;
+                    axios.get(url).then(function (response) {
+                        vue.transaction = response.data;
+                        console.log(vue.transaction);
+                    });
+                },
+            }
+        });
+    });
+
+</script>
+<div id="workingArea">
+    <div class="container">
+        <div th:replace="include/brower/browerSearch::html"></div>
+        <div class="row">
+            <div class="panel">
+                <div class="panel-heading blockAbstract-outer" style="background-color: #f3f4f7">
+                    <div class="panel-heading-title">摘要</div>
+                </div>
+                <div class="panel-body text-center">
+                    <div class="abstract-inner txAbstract-inner">
+                        <div class="abstract-section">
+                            <dl>
+                                <dt>块高度</dt>
+                                <dd>{{transaction.transactions.block.height}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>矿工费</dt>
+                                <dd>{{transaction.transactions.fees}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>大小</dt>
+                                <dd>{{transaction.transactions.size}}</dd>
+                            </dl>
+                        </div>
+                        <div class="abstract-section">
+                            <dl>
+                                <dt>输入</dt>
+                                <dd>{{transaction.transactions.input}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>输出</dt>
+                                <dd>{{transaction.transactions.output}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>出块时间</dt>
+                                <dd>{{transaction.transactions.block._time}}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel blockTxList">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="panel-heading-title">
+                                输入(1)
+                                <span class="txDetail-heading-amount">{{transaction.transactions.input}}</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="panel-heading-title">
+                                输出(2)
+                                <span class="txDetail-heading-amount">{{transaction.transactions.output}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="tx-item">
+                        <table class="table">
+                            <tbody>
+                            <tr class="txio">
+                                <td>
+                                    <ul>
+                                        <li v-for="ins in transaction.input">
+                                            <span class="txio-address"><a :href="'address?address='+ins.address">{{ins.address}}</a></span>
+                                            <span class="txio-amount">{{ins.money}}</span>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li v-for="outs in transaction.output">
+                                            <span class="txio-address"><a :href="'address?address='+outs.address">{{outs.address}}</a></span>
+                                            <span class="txio-amount">{{outs.money}}</span>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="include/brower/browerFooter::html"></div>
+</body>
+</html>

@@ -1,0 +1,264 @@
+/*总体UI样式*/
+body {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    background-color: #ecf0f3;
+    color: black;
+}
+
+div#workingArea {
+    min-height: calc(100% - 60px - 290px);
+    padding-top: 20px;
+    min-width: 1180px;
+}
+
+div.container {
+    width: 1800px !important;
+}
+
+/*搜索框样式*/
+div.searchDiv {
+    width: 80%;
+    margin: 100px auto 100px auto;
+}
+
+input.index-search {
+    width: 85%;
+    height: 50px;
+    padding-left: 25px;
+    margin-right: 4%;
+    font-size: 13px;
+    letter-spacing: .15px;
+    border: 0;
+    outline: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #ecf0f3;
+    transition: .25s ease;
+    border-radius: 8px;
+    box-shadow: inset 2px 2px 4px #d1d9e6, inset -2px -2px 4px #f9f9f9;
+}
+
+button.index-search-btn {
+    width: 10%;
+    height: 50px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1.15px;
+    background-color: #4B70E2;
+    color: #f9f9f9;
+    box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #f9f9f9;
+    border: 0;
+    outline: none !important;
+}
+
+/*分块样式*/
+div.panel {
+    margin: 0px auto 25px auto;
+    width: 80%;
+    padding: 25px;
+    background-color: #ecf0f3;
+    box-shadow: 10px 10px 10px #d1d9e6, -10px -10px 10px #f9f9f9;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+div.panel-body {
+    padding: 20px;
+}
+
+div.panel-heading {
+    font-size: 15px;
+    font-weight: bold;
+    border-bottom: 2px solid white;
+    line-height: 21px;
+    padding: 10px 20px;
+}
+
+/*区块信息样式*/
+div.blockAbstract-inner {
+    display: inline-block;
+    width: 100%;
+}
+
+div.blockAbstract-section {
+    float: left;
+    line-height: 30px;
+    min-width: 20%;
+    width: auto;
+    margin: 0 auto;
+}
+
+div.blockAbstract-section:not(:last-child) {
+    border-right: 1px solid #d8d8d8;
+    padding-right: 15px;
+    margin-right: 7px;
+}
+
+.blockAbstract-section dl {
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.blockAbstract-section dt, .blockAbstract-section dd {
+    line-height: 30px;
+}
+
+.blockAbstract-section dt {
+    float: left;
+    collapse: #888;
+    font-weight: 400;
+}
+
+.blockAbstract-section dd {
+    float: right;
+    margin-left: 8px;
+}
+
+/*区块交易样式*/
+.tx-item {
+    font-size: 14px;
+    margin-bottom: 50px;
+}
+
+.tx-item > .table {
+    table-layout: fixed;
+    margin-bottom: 0;
+}
+
+.tx-item td:first-child {
+    padding-left: 20px !important;
+}
+
+.tx-item td:last-child {
+    padding-left: 20px !important;
+}
+
+.tx-item-summary {
+    background: #f3f4f7;
+}
+
+.tx-item-summary td {
+    width: 50%;
+    border-top: 0 !important;
+    height: 38px !important;
+    vertical-align: middle !important;
+}
+
+.tx-item-summary td:first-child {
+    font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.tx-item-summary td:last-child {
+    text-align: right;
+}
+
+.txio {
+    font-size: 14px;
+}
+
+.tx-item .table .txio > td:first-child {
+    padding-right: 0;
+}
+
+.tx-item .table .txio > td {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    vertical-align: middle;
+    position: relative;
+}
+
+.tx-item .table .txio > td:first-child {
+    padding-right: 50px;
+}
+
+.tx-item .table .txio > td:last-child ul {
+    padding-left: 50px;
+}
+
+.txio ul {
+    list-style: none;
+    margin-bottom: 0;
+    padding-left: 0;
+    line-height: 30px;
+}
+
+.txio-address {
+    font-family: "Droid Sans Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.txio-amount {
+    float: right;
+}
+
+.txio-address-coinbasecome {
+    background-color: #ddd;
+}
+
+.txio-arrow {
+    position: absolute;
+    top: 50%;
+    margin-top: -15px;
+    left: -15px;
+    font-size: 15px;
+    line-height: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    color: #fff;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+/*交易信息样式*/
+.abstract-section {
+    float: left;
+    line-height: 30px;
+    width: 50%;
+}
+
+.abstract-section:first-child {
+    border-right: 1px solid #e6e9ee;
+    padding-right: 50px;
+}
+
+.abstract-section:last-child {
+    padding-left: 50px;
+}
+
+.txAbstract-inner .abstract-section > dl {
+    height: 30px;
+    overflow: inherit;
+}
+
+.abstract-section dl {
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.abstract-section dt, .abstract-section dd {
+    line-height: 30px;
+}
+
+.abstract-section dt {
+    float: left;
+    font-weight: 400;
+    margin-right: 10px;
+}
+
+.abstract-section dt, .abstract-section dd {
+    line-height: 30px;
+}
+
+.abstract-section dd {
+    float: right;
+}
+
+/*交易详情样式*/
+.txDetail-heading-amount {
+    float: right;
+}

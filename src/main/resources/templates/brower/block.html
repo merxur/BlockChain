@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="include/brower/browerHeader::html('区块')"></head>
+<body>
+<div th:replace="include/brower/browerNavigator::html"></div>
+<script>
+    $(function () {
+        var data4Vue = {
+            uri_block: 'block/',
+            uri_transactions: 'txbybhash/',
+            beans: [],
+            transactions: [],
+        };
+
+        //ViewModel
+        var vue = new Vue({
+            el: '#workingArea',
+            data: data4Vue,
+            mounted: function () { //mounted　表示这个 Vue 对象加载成功了
+                this.list_block();
+            },
+            methods: {
+                list_block: function () {
+                    var height = getUrlParms("height");
+                    var url = this.uri_block + height;
+                    axios.get(url).then(function (response) {
+                        vue.beans = response.data;
+                        console.log(vue.beans);
+                    }).then(function () {
+                        var url = vue.uri_transactions + vue.beans.blockhash;
+                        axios.get(url).then(function (response) {
+                            vue.transactions = response.data;
+                            console.log(vue.transactions);
+                        })
+                    })
+                },
+            }
+        });
+    });
+
+</script>
+<div id="workingArea">
+    <div class="container">
+        <div th:replace="include/brower/browerSearch::html"></div>
+        <div class="row">
+            <div class="panel">
+                <div class="panel-heading blockAbstract-outer">
+                    <div class="panel-heading-title switch__title title">摘要</div>
+                </div>
+                <div class="panel-body text-center">
+                    <div class="blockAbstract-inner">
+                        <div class="blockAbstract-section">
+                            <dl>
+                                <dt>高度</dt>
+                                <dd>{{beans.height}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>大小</dt>
+                                <dd>{{beans.size}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>数量</dt>
+                                <dd>{{beans.txcount}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>版本</dt>
+                                <dd>{{beans._version}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>难度</dt>
+                                <dd>{{beans.difficulty}}</dd>
+                            </dl>
+                        </div>
+                        <div class="blockAbstract-section">
+                            <dl>
+                                <dt>Bits</dt>
+                                <dd>{{beans.bits}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>Nonce</dt>
+                                <dd>{{beans.nonce}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>播报方</dt>
+                                <dd><a :href="'address?address='+beans.replayed">{{beans.replayed}}</a></dd>
+                            </dl>
+                            <dl>
+                                <dt>时间</dt>
+                                <dd>{{beans._time}}</dd>
+                            </dl>
+                        </div>
+                        <div class="blockAbstract-section">
+                            <dl>
+                                <dt>块哈希</dt>
+                                <dd>{{beans.blockhash}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>前一个块</dt>
+                                <dd><a :href="'block?height='+(beans.height-1)">{{beans.prevhash}}</a></dd>
+                            </dl>
+                            <dl>
+                                <dt>后一个块</dt>
+                                <dd><a :href="'block?height='+(beans.height+1)">{{beans.nexthash}}</a></dd>
+                            </dl>
+                            <dl>
+                                <dt>Merkle Root</dt>
+                                <dd>{{beans.merkleroot}}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel blockTxList">
+                <div class="panel-heading">
+                    <div class="panel-heading-title">交易</div>
+                </div>
+                <div class="panel-body">
+                    <div class="tx-item" v-for="transaction in transactions">
+                        <table class="table">
+                            <tbody>
+                            <tr class="tx-item-summary">
+                                <td><a :href="'transaction?id='+transaction.transactions.id">
+                                    {{transaction.transactions.thash}}</a></td>
+                                <td>
+                                    <span class="tx-item-summary-timestamp">{{transaction.transactions.fees}}</span>
+                                    <span class="tx-item-summary-timestamp">{{transaction.transactions.block._time}}</span>
+                                </td>
+                            </tr>
+                            <tr class="txio">
+                                <td>
+                                    <ul>
+                                        <li v-for="ins in transaction.input">
+                                            <span class="txio-address"><a :href="'address?address='+ins.address">{{ins.address}}</a></span>
+                                            <span class="txio-amount">{{ins.money}}</span>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <i class="glyphicon glyphicon-chevron-right txio-arrow txio-address-coinbasecome"></i>
+                                    <ul>
+                                        <li v-for="outs in transaction.output">
+                                            <span class="txio-address"><a :href="'address?address='+outs.address">{{outs.address}}</a></span>
+                                            <span class="txio-amount">{{outs.money}}</span>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="include/brower/browerFooter::html"></div>
+</body>
+</html>

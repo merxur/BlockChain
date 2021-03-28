@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="include/brower/browerHeader::html('地址')"></head>
+<body>
+<div th:replace="include/brower/browerNavigator::html"></div>
+<script>
+    $(function () {
+        var data4Vue = {
+            uri_transactions: 'txbyaddress/',
+            transactions: [],
+            address: '',
+        };
+
+        //ViewModel
+        var vue = new Vue({
+            el: '#workingArea',
+            data: data4Vue,
+            mounted: function () { //mounted　表示这个 Vue 对象加载成功了
+                this.list_transaction();
+            },
+            methods: {
+                list_transaction: function () {
+                    var address = getUrlParms("address");
+                    var url = this.uri_transactions + address;
+                    axios.get(url).then(function (response) {
+                        vue.transactions = response.data;
+                        vue.address = address;
+                        console.log(vue.transactions);
+                    });
+                },
+            }
+        });
+    });
+</script>
+<div id="workingArea">
+    <div class="container">
+        <div th:replace="include/brower/browerSearch::html"></div>
+        <div class="row">
+            <div class="panel">
+                <div class="panel-heading blockAbstract-outer">
+                    <div class="panel-heading-title">摘要</div>
+                </div>
+                <div class="panel-body text-center">
+                    <div class="abstract-inner txAbstract-inner">
+                        <div class="abstract-section">
+                            <dl>
+                                <dt>地址</dt>
+                                <dd>{{address}}</dd>
+                            </dl>
+                        </div>
+                        <div class="abstract-section">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel blockTxList">
+                <div class="panel-heading">
+                    <div class="panel-heading-title">交易</div>
+                </div>
+                <div class="panel-body">
+                    <div class="tx-item" v-for="transaction in transactions">
+                        <table class="table">
+                            <tbody>
+                            <tr class="tx-item-summary">
+                                <td><a :href="'transaction?id='+transaction.transactions.id">
+                                    {{transaction.transactions.thash}}</a></td>
+                                <td>
+                                    <span class="tx-item-summary-timestamp">{{transaction.transactions.fees}}</span>
+                                    <span class="tx-item-summary-timestamp">{{transaction.transactions.block._time}}</span>
+                                </td>
+                            </tr>
+                            <tr class="txio">
+                                <td>
+                                    <ul>
+                                        <li v-for="ins in transaction.input">
+                                            <span class="txio-address"><a :href="'address?address='+ins.address">{{ins.address}}</a></span>
+                                            <span class="txio-amount">{{ins.money}}</span>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <i class="glyphicon glyphicon-chevron-right txio-arrow txio-address-coinbasecome"></i>
+                                    <ul>
+                                        <li v-for="outs in transaction.output">
+                                            <span class="txio-address"><a :href="'address?address='+outs.address">{{outs.address}}</a></span>
+                                            <span class="txio-amount">{{outs.money}}</span>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="include/brower/browerFooter::html"></div>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" dir="ltr">
+<head th:include="include/wallet/walletHeader::html('登录')">
+    <meta charset="UTF-8">
+    <title>www.bootstrapmb.com - Neumorphism Login Form</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <meta charset="utf-8">
+</head>
+<body>
+<link rel="stylesheet" href="css/wallet/wallet.css">
+<script>
+    $(function () {
+        var data4Vue = {
+            uri: 'registerKey',
+            uri_add: 'addTransaction',
+            uri_getmessage: 'getMessage',
+            uri_mining: 'uploadMining',
+            address: '',
+            transactions: {input: [], output: []},
+            txcount: 1,
+            balance: 0,
+            walletBalance: 0,
+            tx: [],
+            uploadMining: {nonce: 0, address: ''}
+        };
+
+        //ViewModel
+        var vue = new Vue({
+            el: '#workingArea',
+            data: data4Vue,
+            mounted: function () { //mounted　表示这个 Vue 对象加载成功了
+                this.getAddress();
+            },
+            methods: {
+                getAddress: function () {
+                    this.address = $("#WalletAddress").text();
+                    this.walletBalance = parseFloat($("#balance").text());
+                    this.transactions.output.push({address: this.address, money: this.balance})
+                    var balance = 0;
+                    var count = this.txcount;
+                    for (i = 0; i < count; i++) {
+                        balance += parseFloat(this.transactions.output[i].money);
+                        console.log("balance:" + balance);
+                    }
+                    if (this.walletBalance < balance) {
+                        alert("余额不足");
+                        this.transactions.output[index].money = 0;
+                    } else {
+                        this.balance = this.walletBalance - balance;
+                        console.log("this.balance:" + this.balance);
+                    }
+                },
+                addTxCount: function () {
+                    this.transactions.output.push({address: '', money: 0.0});
+                    this.txcount++;
+                },
+                deleteTxCount: function (index) {
+                    console.log(index);
+                    console.log(this.transactions);
+                    this.transactions.output.splice(index, 1);
+                    console.log(this.transactions);
+                    this.txcount--;
+                },
+                changeTransaction: function (index) {
+                    var address = document.getElementById("address" + index).value;
+                    var money = document.getElementById("money" + index).value;
+                    this.transactions.output[index].address = address;
+                    this.transactions.output[index].money = money;
+                    var balance = parseFloat("0");
+                    const count = this.txcount;
+                    for (i = 0; i < count; i++) {
+                        balance += parseFloat(this.transactions.output[i].money);
+                        console.log("balance:" + balance);
+                    }
+                    if (this.walletBalance < balance) {
+                        alert("余额不足");
+                        this.transactions.output[index].money = 0;
+                    } else {
+                        this.balance = this.walletBalance - balance;
+                        console.log("this.balance:" + this.balance);
+                    }
+                },
+                addTransaction: function () {
+                    var input = [{address: this.address, money: this.walletBalance}]
+                    this.transactions.input = input;
+                    $.ajax({
+                        method: 'post',
+                        url: this.uri_add,
+                        contentType: 'application/json',
+                        data: JSON.stringify(this.transactions),
+                        dataType: "text",
+                        success: function (data) {
+                        },
+                    });
+                },
+                mining: function () {
+                    $.ajax({
+                        method: 'post',
+                        url: this.uri_getmessage,
+                        contentType: 'application/json',
+                        data: JSON.stringify(this.address),
+                        dataType: "json",
+                        success: function (data) {
+                            console.log(data);
+                            var i = 0;
+                            alert("正在挖矿中！请勿关闭本窗口！稍后会提示挖矿成功！");
+                            var worker=new Worker("js/sha256/sha256.js");
+                            worker.onmessage = function(event){
+                                vue.uploadMining.nonce = event.data;
+                                vue.uploadMining.address = vue.address;
+                                $.ajax({
+                                    method: 'post',
+                                    url: 'uploadMining',
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(vue.uploadMining),
+                                    dataType: "text",
+                                    success: function (data) {
+                                        alert("挖矿成功！");
+                                    },
+                                });
+                            }
+                            worker.postMessage(data);
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+<div id="workingArea">
+    <div class="row">
+        <div th:replace="include/brower/browerNavigator::html"></div>
+    </div>
+    <div class="row">
+        <div class=" AddressContainer">
+            <div class="panel">
+                <div class="panel-heading blockAbstract-outer">
+                    <div class="panel-heading-title title">Address</div>
+                </div>
+                <div class="panel-body text-center">
+                    <div class="abstract-inner txAbstract-inner">
+                        <div class="abstract-section">
+                            <div id="WalletAddress" class="address" th:text="${session.address}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class=" BalanceContainer">
+            <div class="panel">
+                <div class="panel-heading blockAbstract-outer">
+                    <div class="panel-heading-title title">Balance</div>
+                </div>
+                <div class="panel-body text-center">
+                    <div class="abstract-inner txAbstract-inner">
+                        <div class="abstract-section">
+                            <div id="balance" class="balance" th:text="${session.balance}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class=" SendContainer">
+            <div class="panel">
+                <div class="row">
+                    <div class="panel-heading blockAbstract-outer">
+                        <div class="panel-heading-title title">Send</div>
+                    </div>
+                    <div class="panel-body text-center">
+                        <div class="abstract-inner txAbstract-inner">
+                            <div class="abstract-section">
+                                <div id="outputAddress" class="address" th:text="${session.address}"></div>
+                                <input id="outputBalance" class="form__input__money" th:value="${session.balance}"
+                                       disabled="disabled">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="panel-heading blockAbstract-outer">
+                        <div class="panel-heading-title title">TO</div>
+                    </div>
+                    <div class="panel-body text-center">
+                        <div class="abstract-inner txAbstract-inner">
+                            <div class="abstract-section">
+                                <input class="form__input__address" placeholder="账号可交易的剩余余额" disabled="disabled">
+                                <input class="form__input__money" :value="balance" disabled="disabled">
+                                <button class="button btn-danger red" disabled="disabled"><span
+                                        class="glyphicon glyphicon-stop"></span></button>
+                            </div>
+                            <div v-for="(out,index) in transactions.output" :key="index">
+                                <div class="abstract-section">
+                                    <input class="form__input__address" :id="'address'+index" placeholder="交易目的地址"
+                                           :value="out.address" v-on:change="changeTransaction(index)">
+                                    <input class="form__input__money" :id="'money'+index" placeholder="金额"
+                                           :value="out.money" v-on:change="changeTransaction(index)">
+                                    <button class="button btn-danger red" v-on:click="deleteTxCount(index)"><span
+                                            class="glyphicon glyphicon-trash" disabled="['disabled':(index==0)]"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="choice-group">
+                        <button class="button" v-on:click="addTxCount()">添加</button>
+                        <button class="button" v-on:click="addTransaction()">交易</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class=" MiningContainer">
+            <div class="panel">
+                <div class="row">
+                    <div class="panel-heading blockAbstract-outer">
+                        <div class="panel-heading-title title">Mining</div>
+                    </div>
+                    <div class="panel-body text-center">
+                        <div class="abstract-inner txAbstract-inner">
+                            <div class="abstract-section">
+                                <button class="button" v-on:click="mining()">挖矿</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="include/brower/browerFooter::html"></div>
+</body>
+</html>
